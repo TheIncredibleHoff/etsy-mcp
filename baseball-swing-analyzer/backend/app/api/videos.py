@@ -8,7 +8,7 @@ from fastapi.responses import FileResponse
 
 from .. import storage
 from ..config import get_settings
-from ..models import VideoRecord, VideoStatus
+from ..models import HitterProfile, VideoRecord, VideoStatus
 from ..services import pipeline
 from ..services.video import looks_like_mp4_or_mov, probe
 
@@ -99,21 +99,37 @@ def get_video_file(video_id: str) -> FileResponse:
     return FileResponse(storage.video_file(record), media_type=record.content_type)
 
 
-@router.post("/{video_id}/analyze", status_code=status.HTTP_202_ACCEPTED, response_model=VideoRecord)
-def analyze_video(video_id: str, background: BackgroundTasks) -> VideoRecord:
-    record = _get_record(video_id)
+def _start_job(record: VideoRecord, **updates) -> VideoRecord:
     if record.status == VideoStatus.processing:
         raise HTTPException(status.HTTP_409_CONFLICT, "Analysis is already running")
     record = record.model_copy(
-        update={
-            "status": VideoStatus.processing,
-            "stage": "Queued",
-            "progress": 0.0,
-            "error": None,
-        }
+        update={"status": VideoStatus.processing, "stage": "Queued", "progress": 0.0, "error": None}
+        | updates
     )
     storage.save_record(record)
+    return record
+
+
+@router.post("/{video_id}/analyze", status_code=status.HTTP_202_ACCEPTED, response_model=VideoRecord)
+def analyze_video(
+    video_id: str, background: BackgroundTasks, hitter: HitterProfile | None = None
+) -> VideoRecord:
+    """Run the full analysis. The optional body describes the hitter."""
+    record = _get_record(video_id)
+    record = _start_job(record, hitter=hitter or record.hitter)
+    storage.delete_json(video_id, pipeline.POSE_FILE, pipeline.METRICS_FILE, pipeline.FEEDBACK_FILE)
     background.add_task(pipeline.run_analysis, video_id)
+    return record
+
+
+@router.post("/{video_id}/feedback", status_code=status.HTTP_202_ACCEPTED, response_model=VideoRecord)
+def regenerate_feedback(video_id: str, background: BackgroundTasks) -> VideoRecord:
+    """Ask Claude again using the stored metrics, without re-running pose tracking."""
+    record = _get_record(video_id)
+    if storage.read_json(video_id, pipeline.METRICS_FILE) is None:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Analyze the video first")
+    record = _start_job(record)
+    background.add_task(pipeline.run_feedback_only, video_id)
     return record
 
 
@@ -124,6 +140,16 @@ def get_pose(video_id: str) -> dict:
     if pose is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Pose data not available yet")
     return pose
+
+
+@router.get("/{video_id}/analysis")
+def get_analysis(video_id: str) -> dict:
+    """Metrics plus Claude's feedback (feedback may be absent, skipped, or an error)."""
+    _get_record(video_id)
+    metrics = storage.read_json(video_id, pipeline.METRICS_FILE)
+    if metrics is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Analysis not available yet")
+    return {"metrics": metrics, "feedback": storage.read_json(video_id, pipeline.FEEDBACK_FILE)}
 
 
 @router.delete("/{video_id}", status_code=status.HTTP_204_NO_CONTENT)

@@ -70,3 +70,8 @@ def read_json(video_id: str, name: str) -> object | None:
     if not path.exists():
         return None
     return json.loads(path.read_text())
+
+
+def delete_json(video_id: str, *names: str) -> None:
+    for name in names:
+        (video_dir(video_id) / name).unlink(missing_ok=True)

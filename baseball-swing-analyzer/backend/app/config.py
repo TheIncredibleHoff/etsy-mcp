@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=BACKEND_DIR / ".env", extra="ignore")
 
     anthropic_api_key: str = ""
-    claude_model: str = "claude-opus-5-5"
+    claude_model: str = "claude-opus-5"
     storage_dir: Path = Path("storage")
     max_upload_mb: int = 200
     cors_origins: str = "http://localhost:5173"

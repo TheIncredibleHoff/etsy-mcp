@@ -280,3 +280,399 @@ button:disabled {
 .small {
   font-size: 0.85rem;
 }
+
+/* ---- Dashboard ---------------------------------------------------------- */
+
+:root {
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --grid: #e7e9ec;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --grid: #2a3038;
+  }
+}
+
+.hitter-form {
+  margin-top: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.hitter-form label {
+  display: grid;
+  gap: 4px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.inline-inputs {
+  display: flex;
+  gap: 6px;
+}
+
+.inline-inputs input {
+  width: 72px;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 10px;
+}
+
+textarea {
+  resize: vertical;
+  width: 100%;
+}
+
+.form-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.results-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .results-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.results-side .feedback {
+  margin-top: 16px;
+}
+
+.phase-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.phase-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.phase-buttons button {
+  font-size: 0.85rem;
+  padding: 6px 10px;
+}
+
+.phase-buttons button.active {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.feedback h2 {
+  margin: 0;
+}
+
+.feedback h3 {
+  font-size: 0.95rem;
+  margin: 18px 0 8px;
+}
+
+.feedback-header {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.feedback-header button {
+  font-size: 0.85rem;
+  padding: 5px 10px;
+}
+
+.feedback-summary {
+  font-size: 1.02rem;
+}
+
+.focus {
+  background: var(--accent-soft);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.focus-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.issue {
+  border-top: 1px solid var(--border);
+  padding: 10px 0;
+}
+
+.issue p {
+  margin: 6px 0;
+}
+
+.issue-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.priority {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+
+.priority-high {
+  color: var(--bad);
+}
+
+.priority-medium {
+  color: var(--warn);
+}
+
+.priority-low {
+  color: var(--muted);
+}
+
+details summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.strengths {
+  padding-left: 18px;
+  margin: 0;
+}
+
+.strengths li {
+  margin-bottom: 6px;
+}
+
+.warnings {
+  list-style: none;
+  padding: 10px 14px;
+  margin: 20px 0 0;
+  border: 1px solid var(--warn);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.warnings li + li {
+  margin-top: 4px;
+}
+
+.section-title {
+  margin-top: 28px;
+}
+
+.metric-groups {
+  display: grid;
+  gap: 18px;
+}
+
+.metric-group h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.metric-tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.metric-tile.highlighted {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.metric-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.metric-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-unit {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+.metric-desc {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.35;
+  margin-top: 4px;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.chart {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  min-width: 0;
+}
+
+.chart figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.chart-title {
+  font-weight: 600;
+}
+
+.legend {
+  display: flex;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.chart-body {
+  position: relative;
+}
+
+.chart svg {
+  display: block;
+  cursor: crosshair;
+}
+
+.chart .grid {
+  stroke: var(--grid);
+  stroke-width: 1;
+}
+
+.chart .axis-zero {
+  stroke: var(--muted);
+  stroke-width: 1;
+  opacity: 0.6;
+}
+
+.chart .tick {
+  fill: var(--muted);
+  font-size: 11px;
+}
+
+.chart .phase-line {
+  stroke: var(--muted);
+  stroke-dasharray: 3 3;
+  opacity: 0.7;
+}
+
+.chart .phase-label {
+  fill: var(--muted);
+  font-size: 10px;
+}
+
+.chart .playhead {
+  stroke: var(--text);
+  stroke-width: 1.5;
+}
+
+.chart .crosshair {
+  stroke: var(--muted);
+  stroke-width: 1;
+}
+
+.chart-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  min-width: 140px;
+}
+
+.tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tooltip-row strong {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}

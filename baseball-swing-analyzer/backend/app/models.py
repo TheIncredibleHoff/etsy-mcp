@@ -1,7 +1,9 @@
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel
+from typing import Literal
+
+from pydantic import BaseModel, Field
 
 
 class VideoStatus(str, Enum):
@@ -19,6 +21,14 @@ class VideoInfo(BaseModel):
     duration_s: float
 
 
+class HitterProfile(BaseModel):
+    """Optional details that make the metrics and feedback more specific."""
+
+    height_in: float | None = Field(default=None, gt=36, lt=96)
+    level: Literal["youth", "high_school", "college", "pro", "adult"] | None = None
+    notes: str | None = Field(default=None, max_length=1000)
+
+
 class VideoRecord(BaseModel):
     id: str
     original_filename: str
@@ -32,3 +42,4 @@ class VideoRecord(BaseModel):
     progress: float = 0.0
     error: str | None = None
     info: VideoInfo
+    hitter: HitterProfile = HitterProfile()
