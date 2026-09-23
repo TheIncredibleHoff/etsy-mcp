@@ -27,5 +27,8 @@ class VideoRecord(BaseModel):
     size_bytes: int
     uploaded_at: datetime
     status: VideoStatus = VideoStatus.uploaded
+    # Human-readable name of the step currently running, and its progress (0..1)
+    stage: str | None = None
+    progress: float = 0.0
     error: str | None = None
     info: VideoInfo

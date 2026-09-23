@@ -14,12 +14,23 @@ class Settings(BaseSettings):
     storage_dir: Path = Path("storage")
     max_upload_mb: int = 200
     cors_origins: str = "http://localhost:5173"
+    pose_model_path: Path = Path("storage/models/pose_landmarker_full.task")
+    pose_model_url: str = (
+        "https://storage.googleapis.com/mediapipe-models/pose_landmarker/"
+        "pose_landmarker_full/float16/latest/pose_landmarker_full.task"
+    )
+    max_analysis_frames: int = 900
 
     @property
     def storage_path(self) -> Path:
         path = self.storage_dir if self.storage_dir.is_absolute() else BACKEND_DIR / self.storage_dir
         path.mkdir(parents=True, exist_ok=True)
         return path
+
+    @property
+    def pose_model_file(self) -> Path:
+        path = self.pose_model_path
+        return path if path.is_absolute() else BACKEND_DIR / path
 
     @property
     def max_upload_bytes(self) -> int:

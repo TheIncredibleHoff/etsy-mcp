@@ -1,4 +1,4 @@
-import type { VideoRecord } from "./types";
+import type { PoseData, VideoRecord } from "./types";
 
 const BASE = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
 
@@ -30,6 +30,9 @@ export const videoFileUrl = (id: string) => `${BASE}/api/videos/${id}/file`;
 
 export const listVideos = () => request<VideoRecord[]>("/api/videos");
 export const getVideo = (id: string) => request<VideoRecord>(`/api/videos/${id}`);
+export const analyzeVideo = (id: string) =>
+  request<VideoRecord>(`/api/videos/${id}/analyze`, { method: "POST" });
+export const getPose = (id: string) => request<PoseData>(`/api/videos/${id}/pose`);
 export const deleteVideo = (id: string) =>
   request<void>(`/api/videos/${id}`, { method: "DELETE" });
 

@@ -3,12 +3,13 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
 
 from .. import storage
 from ..config import get_settings
-from ..models import VideoRecord
+from ..models import VideoRecord, VideoStatus
+from ..services import pipeline
 from ..services.video import looks_like_mp4_or_mov, probe
 
 router = APIRouter(prefix="/api/videos", tags=["videos"])
@@ -96,6 +97,33 @@ def get_video(video_id: str) -> VideoRecord:
 def get_video_file(video_id: str) -> FileResponse:
     record = _get_record(video_id)
     return FileResponse(storage.video_file(record), media_type=record.content_type)
+
+
+@router.post("/{video_id}/analyze", status_code=status.HTTP_202_ACCEPTED, response_model=VideoRecord)
+def analyze_video(video_id: str, background: BackgroundTasks) -> VideoRecord:
+    record = _get_record(video_id)
+    if record.status == VideoStatus.processing:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Analysis is already running")
+    record = record.model_copy(
+        update={
+            "status": VideoStatus.processing,
+            "stage": "Queued",
+            "progress": 0.0,
+            "error": None,
+        }
+    )
+    storage.save_record(record)
+    background.add_task(pipeline.run_analysis, video_id)
+    return record
+
+
+@router.get("/{video_id}/pose")
+def get_pose(video_id: str) -> dict:
+    _get_record(video_id)
+    pose = storage.read_json(video_id, pipeline.POSE_FILE)
+    if pose is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Pose data not available yet")
+    return pose
 
 
 @router.delete("/{video_id}", status_code=status.HTTP_204_NO_CONTENT)
